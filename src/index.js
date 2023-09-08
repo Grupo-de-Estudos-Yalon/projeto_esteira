@@ -1,23 +1,19 @@
 const express = require('express');
 const app = express();
-
+var mongoose = require('mongoose');
+mongoose.connect('mongodb+srv://grupoestudos:grupoestudos132@projeto-esteira.97erjdm.mongodb.net/?retryWrites=true&w=majority');
+require('./models/User');
 const PORT = 3000;
 
-/**
- * Express middleware.
- */
-// parses incoming requests with JSON payloads
+
+
 app.use(express.json());
-// parses incoming requests with urlencoded payloads
-// extended: true - parsing the URL-encoded data with the querystring library
+
 app.use(express.urlencoded({extended: true}));
 
-/**
- * Routes.
- */
+
 const usersRouter = require('./routes/playlist');
 
-// Add this after the middleware part
 app.use('/api', usersRouter);
 
 function onStart(){

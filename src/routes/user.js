@@ -9,12 +9,12 @@ router.route('/users/signup')
       const name = req.body.name
       const username = req.body.username
       const password = req.body.password
-      let user = await User.create({
+      let user = new User({
         name: name,
         username: username,
         password: password
       });
-      console.log(user)
+      user.save()
       return res.json({ message: 'Usuário criado!' })
     }
     catch (error) {

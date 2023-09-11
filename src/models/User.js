@@ -2,10 +2,10 @@ let mongoose = require('mongoose');
 let uniqueValidator = require('mongoose-unique-validator');
 let crypto = require('crypto');
 let jwt = require('jsonwebtoken');
-let secret = require('../config').secret;
+require('dotenv').config();
 
 let UserSchema = new mongoose.Schema({
-    name: { type: String, lowercase: true, unique: true, required: [true, "Não pode ser vazio"], match: [/^[a-zA-Z0-9]+$/, 'é inválido'], index: true },
+    name: String,
     username: String,
     password: String,
     hash: String,
@@ -35,7 +35,7 @@ UserSchema.methods.generateJWT = function () {
         id: this._id,
         username: this.username,
         exp: parseInt(exp.getTime() / 1000),
-    }, secret);
+    }, process.env.JWT_SECRET);
 };
 
 UserSchema.methods.toAuthJSON = function () {
@@ -48,4 +48,5 @@ UserSchema.methods.toAuthJSON = function () {
     };
 };
 
-mongoose.model('user', UserSchema)
+
+module.exports = User = mongoose.model('User', UserSchema)

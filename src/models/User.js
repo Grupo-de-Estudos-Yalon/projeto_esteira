@@ -3,10 +3,16 @@ let uniqueValidator = require('mongoose-unique-validator');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
+
+
 let UserSchema = new mongoose.Schema({
     name: String,
     username: String,
     password: String,
+    altura: float,
+    playlists: []
+
+
 }, { timestamps: true });
 
 UserSchema.plugin(uniqueValidator, { message: 'Já está em uso.' });

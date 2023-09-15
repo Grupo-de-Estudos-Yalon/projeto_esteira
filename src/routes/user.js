@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
 
-router.route('/users/signup')
+router.route('/user/signup')
   .post(async function (req, res) {
     try {
       const name = req.body.name
@@ -38,7 +38,7 @@ router.route('/users/signup')
 
   );
 
-router.route('/users/login')
+router.route('/user/login')
   .get(async function (req, res) {
     try {
 

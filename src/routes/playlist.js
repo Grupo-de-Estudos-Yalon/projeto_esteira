@@ -3,7 +3,7 @@ const spotifyUtils = require('../utils/spotifyUtils')
 
 router.route('/playlist/genres')
     // to retrieve resource
-    .get(async function(req, res, next) {
+    .get(async function(req, res) {
         res.status(200).send(await spotifyUtils.getGenres());
     });
 

@@ -9,7 +9,7 @@ let UserSchema = new mongoose.Schema({
     name: String,
     username: String,
     password: String,
-    altura: Number,
+    altura: float,
     playlists: []
 
 

@@ -4,7 +4,8 @@
   "description": "",
   "main": "./src/index.js",
   "scripts": {
-    "start": "nodemon",
+    "dev": "nodemon --exec sucrase-node ./src/index.js",
+    "lint": "eslint --ext .js --ignore-path .gitignore .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -15,12 +16,21 @@
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
+    "eslint-config-prettier": "^9.0.0",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.0.0",
-    "mongoose-unique-validator": "^4.0.0"
+    "mongodb": "^6.1.0",
+    "mongoose-unique-validator": "^4.0.0",
+    "prettier": "^3.0.3",
+    "sucrase": "^3.34.0"
   },
   "devDependencies": {
+    "eslint": "^8.50.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.1.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-promise": "^6.1.1",
     "nodemon": "^3.0.1"
   }
 }

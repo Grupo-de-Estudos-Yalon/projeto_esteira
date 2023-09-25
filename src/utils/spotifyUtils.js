@@ -1,7 +1,8 @@
-
+const Utils = require('./utils')
 const axios = require('axios').default;
+
 require('dotenv').config()
-require('..\routes\playlist.js')
+
 
 var token = {
     bearer: "",
@@ -55,42 +56,62 @@ async function getGenres() {
     }
 }
 
-function CriarPlaylist(playlistDTO) {
-    
-    gerarBPM(playlistDTO){
-        // O método abaixo define o valor do coeficiente de passada 
-        // para 0.4 , 0.5 ou 0.6, a depender da altura da pessoa. (olhar explicacao.txt) 
+function AdicionaMusicaNaPlaylist(){ 
+    tempoPlaylist = 0
+    i = 0
+    while(tempoPlaylist < playlistDTO.duracao) {
+        adicionaNoSpotify(musicas[i]); 
+        i++;
+        tempoPlaylist =+ musicas[i].tempo;
+}
 
-        CoeficientePassada(playlistDTO.altura)
-        passada = playlistDTO.altura * CoeficientePassada;
-        passosPorHora = playlistDTO.velocidade / passada;
-        passosPorMinuto = passosPorHora / 60;
-        // aqui eu quero adicionar o BPM como um atributo do DTO
-        return playlistDTO.BPM
+function getSongsByGenreAndBPM(playlistDTO) {
+    "devolve um array com objetos do tipo música"
+    
+    //Aqui a parte do código que vai criar a playlist no Spotify
+    
+    //ao final dessa iteração, certamente o tempo da playlist não será identico ao requisitado no DTO,
+    // portando é interessante passarmos o tempo da playlist populada para o o DTO no final do processo.
+    //não só o tempo, mas todas as músicas contidas dentro dessa playlist.
 
     }
-    //ler a API para verificar como as buscas por música podem ser feitas.
-    getSongsByGenreAndBPM(playlistDTO) {
-        "devolve um array com objetos do tipo música" } 
-        
-        //Aqui a parte do código que vai criar a playlist no Spotify
-        CriaPlaylistNoSpotify(){
-            "Executa o código da API e cria a playlist. Após criada adiciona o id da playlist no nosso DTO";
-        }
-        AdicionaMusicaNaPlaylist(){ 
-            tempoPlaylist = 0
-            i = 0
-            while(tempoPlaylist < playlistDTO.duracao) {
-                adicionaNoSpotify(musicas[i]); 
-                i++;
-                tempoPlaylist =+ musicas[i].tempo;
-        }
-        //ao final dessa iteração, certamente o tempo da playlist não será identico ao requisitado no DTO,
-        // portando é interessante passarmos o tempo da playlist populada para o o DTO no final do processo.
-        //não só o tempo, mas todas as músicas contidas dentro dessa playlist.
+    
+}
 
-        }
-        
+async function criarPlaylistNoSpotify() {
+    try {
+        const data = {
+            "name": "New Playlist",
+            "description": "New playlist description",
+            "public": true
+       }
+        await authenticate();
+        const response = await axios.post(`https://api.spotify.com/v1/users/Duranpepeu/playlists`, data ,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token.bearer}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
     }
 }
-module.exports = { authenticate, getGenres }
+
+
+function criarPlaylist(playlistDTO) {
+    
+    const bpm = Utils.calcularBPM(playlistDTO.altura, playlistDTO.velocidade)
+    //ler a API para verificar como as buscas por música podem ser feitas.
+
+    criarPlaylistNoSpotify(); 
+
+
+}
+
+
+
+
+module.exports = { authenticate, getGenres, criarPlaylist, criarPlaylistNoSpotify }

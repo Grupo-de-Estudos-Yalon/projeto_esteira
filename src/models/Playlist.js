@@ -6,10 +6,9 @@ require('dotenv').config();
 let PlaylistSchema = new mongoose.Schema({
     name: String,
     genero: String,
-    embrazamento: String,
-    altura: float,
-    embrazamento: Int,
-    duration: Int,
+    embrazamento: Number,
+    altura: Number,
+    duration: Number,
     idSpotify: String
     
 }, { timestamps: true });

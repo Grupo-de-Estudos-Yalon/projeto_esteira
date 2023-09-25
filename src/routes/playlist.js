@@ -9,11 +9,12 @@ router.route('/playlist/genres')
         res.status(200).send(await spotifyUtils.getGenres());
     });
 
-module.exports = router;
+
 
 router.route('playlist/form')
-    .post (async function(req, res)) {
-        try {
+    .post (async function(req, res) {
+        console.log("vamonessa")
+        try { console.log("jesus Cristo")
           
             let playlistDTO = ({  
                  name: req.body.nome,
@@ -42,4 +43,5 @@ router.route('playlist/form')
              console.log(error)
         }
 
-    }
+    })
+    module.exports = router;

@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const mongoose = require('mongoose')
 const User = require('../models/User');
-const { MongoUnexpectedServerResponseError } = require('mongodb');
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 

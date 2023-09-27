@@ -1,13 +1,14 @@
 
 const axios = require('axios').default;
 require('dotenv').config()
+require('../routes/playlist')
 
 var token = {
     bearer: "",
     expires: ""
 }
 
-function tokenExpired(){
+function tokenExpired() {
     return token.expires < new Date()
 }
 
@@ -23,7 +24,7 @@ async function authenticate() {
                 }
             );
             token.bearer = response.data.access_token
-            expires = new Date()            
+            expires = new Date()
             expires_in = response.data.expires_in * 10
             expires.setTime(expires.getTime() + expires_in)
             token.expires = expires
@@ -53,4 +54,5 @@ async function getGenres() {
         console.error(error);
     }
 }
+
 module.exports = { authenticate, getGenres }

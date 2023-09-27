@@ -14,6 +14,7 @@ const client_secret = process.env.CLIENT_SECRET
 const redirect_uri = "http://localhost:3000/api/user/callback"
 
 router.route('/user/signup')
+router.route('/user/signup')
   .post(async function (req, res) {
     try {
       const name = req.body.name

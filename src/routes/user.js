@@ -10,7 +10,7 @@ const axios = require('axios').default;
 
 
 const client_id = process.env.CLIENT_ID
-const client_secret = process.env.CLIENT_SECRET 
+const client_secret = process.env.CLIENT_SECRET
 const redirect_uri = "http://localhost:3000/api/user/callback"
 
 router.route('/user/signup')
@@ -50,7 +50,7 @@ router.route('/user/login')
   .get(function (req, res) {
 
     var state = Utils.generateRandomString(16);
-    var scope = 'user-read-private user-read-email';
+    var scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
     try {
 
@@ -93,31 +93,32 @@ router.route('/user/login')
   })
 router.route('/user/callback')
   .get(async (req, res) => {
-try{
-    var code = req.query.code || null;
-    var state = req.query.state || null;
+    try {
+      var code = req.query.code || null;
+      var state = req.query.state || null;
 
-    console.log(code)
+      console.log(code)
 
-    if (state === null) {
-      res.redirect('/#' +
-        querystring.stringify({
-          error: 'state_mismatch'
-        }));
-    } else {
-      var authOptions = {
+      if (state === null) {
+        res.redirect('/#' +
+          querystring.stringify({
+            error: 'state_mismatch'
+          }));
+      } else {
+        var authOptions = {
 
-        url: 'https://accounts.spotify.com/api/token',
-        form: {
-          code: code,
-          redirect_uri: redirect_uri,
-          grant_type: 'authorization_code'
-        },
-        headers: {
-          'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
-        },
-        json: true
-      };
+          url: 'https://accounts.spotify.com/api/token',
+          form: {
+            code: code,
+            redirect_uri: redirect_uri,
+            grant_type: 'authorization_code'
+          },
+          headers: {
+            'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
+          },
+          json: true
+        };
+      }
       const response = await axios.post(authOptions.url, authOptions.form,
         {
           headers: {
@@ -127,9 +128,65 @@ try{
           json: true,
 
         }
-      );}} catch(error) {console.log(error)}
+      ); const dados = response.data
+      const id = await getUserId(dados)
+      CriarPlaylist(id, token)
+      
+      AdicionarPorBPM()
+      //Chamar a função que retorna o id do usuário e associá-la ao usuário no banco de dados
+      res.json(response.data);
     }
+    catch (error) { console.log(error) };
+  }
   )
+
+// Lógica post para pegar a informações do usuário:
+async function getUserId(dados) {
+  try {
+    token = dados.access_token
+    const response = await axios.get(`https://api.spotify.com/v1/me `,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    id = response.data.id;
+    return id;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function CriarPlaylist(id, token) {
+
+  try {
+
+    const data = {
+      name: "Biggie Smalls Greatest Hits",
+      description: "All I do Is Separate the game from the truth",
+      public: true
+    }
+    const response = await axios.post(`https://api.spotify.com/v1/users/${id}/playlists
+          `, data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+console.log(response.data)
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// ( passar o access token e recuperar o id)
+// com o id recuperado, o passamos para uma variável id 
+//quando formos criar a playlist, a rota vai rota vai ser /users/{user_id}/playlists
+
+
 
 
 

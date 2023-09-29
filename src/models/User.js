@@ -10,7 +10,8 @@ let UserSchema = new mongoose.Schema({
     username: String,
     password: String,
     altura: Number,
-    playlists: []
+    playlists: [],
+    spotifyId : String 
 
 
 }, { timestamps: true });

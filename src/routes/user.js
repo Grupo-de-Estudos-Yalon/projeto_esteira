@@ -7,13 +7,14 @@ const Utils = require("../utils/utils")
 const querystring = require("querystring");
 const url = require('url');
 const axios = require('axios').default;
+const SpotifyUtils = require ("../utils/spotifyUtils")
 
 
 const client_id = process.env.CLIENT_ID
 const client_secret = process.env.CLIENT_SECRET
 const redirect_uri = "http://localhost:3000/api/user/callback"
 
-router.route('/user/signup')
+
 router.route('/user/signup')
   .post(async function (req, res) {
     try {
@@ -129,10 +130,12 @@ router.route('/user/callback')
 
         }
       ); const dados = response.data
+      const token = dados.access_token
       const id = await getUserId(dados)
-      CriarPlaylist(id, token)
-      
-      AdicionarPorBPM()
+      const playlistID = await CriarPlaylist(id, token)
+
+
+      //AdicionarTituloPorBPM(playlistID)
       //Chamar a função que retorna o id do usuário e associá-la ao usuário no banco de dados
       res.json(response.data);
     }
@@ -140,7 +143,7 @@ router.route('/user/callback')
   }
   )
 
-// Lógica post para pegar a informações do usuário:
+
 async function getUserId(dados) {
   try {
     token = dados.access_token
@@ -163,8 +166,8 @@ async function CriarPlaylist(id, token) {
   try {
 
     const data = {
-      name: "Biggie Smalls Greatest Hits",
-      description: "All I do Is Separate the game from the truth",
+      name: "Playlist de Duran",
+      description: "duran eh top",
       public: true
     }
     const response = await axios.post(`https://api.spotify.com/v1/users/${id}/playlists
@@ -176,15 +179,18 @@ async function CriarPlaylist(id, token) {
         }
       }
     );
-console.log(response.data)
+    console.log(response.data.id)
+    SpotifyUtils.buscarTitulosPorBPM(token = token)
+    return response.data.id;
+
   } catch (error) {
     console.error(error);
   }
+ 
 }
 
-// ( passar o access token e recuperar o id)
-// com o id recuperado, o passamos para uma variável id 
-//quando formos criar a playlist, a rota vai rota vai ser /users/{user_id}/playlists
+
+
 
 
 

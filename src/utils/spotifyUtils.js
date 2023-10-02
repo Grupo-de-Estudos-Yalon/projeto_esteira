@@ -55,4 +55,29 @@ async function getGenres() {
     }
 }
 
-module.exports = { authenticate, getGenres }
+async function buscarTitulosPorBPM(bpm = 100, token, genero = "indie") {
+
+    try {
+        // await authenticate();
+        console.log(token)
+      const response = await axios.get(`https://api.spotify.com/v1/recommendations?limit=50&seed_genres=${genero}&min_tempo=${bpm - 5}&max_tempo=${bpm + 5}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      // Vou receber um retorno a adicioná-lo a data. Dentro de data precisa acontecer uma iteração que captura o id de cada um dos itens e utiliza na função FinalizarAdição()
+      const tracks =  response.data.tracks.map(track => {
+        return track.id
+      });
+      console.log("catapimbas!")
+      console.log(tracks)
+    } catch (error) {
+      console.error(error);
+    }
+    
+  }
+
+module.exports = { authenticate, getGenres, buscarTitulosPorBPM }

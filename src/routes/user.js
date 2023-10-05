@@ -64,28 +64,6 @@ router.route('/user/login')
           state: state
         }));
 
-      // const user = await User.findOne({ username: req.body.username }).exec();
-      // console.log(user)
-
-      // let passwordIsValid = bcrypt.compareSync(
-      //   req.body.password,
-      //   user.password
-      // );
-      // console.log(passwordIsValid)
-      // if (!passwordIsValid) {
-      //   return res.status(401).send({ message: "Invalid Password!" });
-      // }
-
-      // const token = jwt.sign({ id: user.id },
-      //   process.env.JWT_SECRET,
-      //   {
-      //     algorithm: 'HS256',
-      //     allowInsecureKeySizes: true,
-      //     expiresIn: 86400, // 24 hours
-      //   });
-      // res.status(200).send(token)
-
-
     }
     catch (error) {
       console.log(error)
@@ -93,12 +71,11 @@ router.route('/user/login')
     }
   })
 router.route('/user/callback')
-  .get(async (req, res) => {
+  .get(async (req, res) => { 
     try {
       var code = req.query.code || null;
       var state = req.query.state || null;
 
-      console.log(code)
 
       if (state === null) {
         res.redirect('/#' +
@@ -129,65 +106,27 @@ router.route('/user/callback')
           json: true,
 
         }
-      ); const dados = response.data
+      ); 
+     
+      // Dados do Access token.
+      const dados = response.data
       const token = dados.access_token
-      const id = await getUserId(dados)
-      const playlistID = await CriarPlaylist(id, token)
-
-
-      //AdicionarTituloPorBPM(playlistID)
-      //Chamar a função que retorna o id do usuário e associá-la ao usuário no banco de dados
-      res.json(response.data);
+      const id = await SpotifyUtils.getUserId(token)
+      const playlistId = await SpotifyUtils.CriarPlaylist(id, token)
+      const tracks = await SpotifyUtils.buscarTitulosPorBPM(token)
+      console.log(tracks.lenght)
+      SpotifyUtils.adicionaMusicas(playlistId, token, tracks)
+      
+      res.json(dados);
     }
     catch (error) { console.log(error) };
-  }
+  } 
   )
 
 
-async function getUserId(dados) {
-  try {
-    token = dados.access_token
-    const response = await axios.get(`https://api.spotify.com/v1/me `,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      }
-    );
-    id = response.data.id;
-    return id;
-  } catch (error) {
-    console.error(error);
-  }
-}
 
-async function CriarPlaylist(id, token) {
 
-  try {
 
-    const data = {
-      name: "Playlist de Duran",
-      description: "duran eh top",
-      public: true
-    }
-    const response = await axios.post(`https://api.spotify.com/v1/users/${id}/playlists
-          `, data,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    console.log(response.data.id)
-    SpotifyUtils.buscarTitulosPorBPM(token = token)
-    return response.data.id;
-
-  } catch (error) {
-    console.error(error);
-  }
- 
-}
 
 
 

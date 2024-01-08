@@ -1,0 +1,2 @@
+1- Chamar função que retorna o id da playlist para passar para o adicionaMusica()
+2-Chamar a função que retorna o id do usuário e associá-la ao usuário no banco de dados

@@ -4,15 +4,39 @@ require('dotenv').config()
 
 var token = {
     bearer: "",
-    expires: ""
+    expires: "0"
 }
 
-function tokenExpired(){
-    return token.expires < new Date()
+function tokenExpired() {
+    return token.expires <= new Date()
+}
+
+const generateRandomString = (length) => {
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const values = crypto.getRandomValues(new Uint8Array(length));
+    return values.reduce((acc, x) => acc + possible[x % possible.length], "");
+}
+
+const base64encode = (input) => {
+    return btoa(String.fromCharCode(...new Uint8Array(input)))
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+}
+
+
+const sha256 = async (plain) => {
+    const encoder = new TextEncoder()
+    const data = encoder.encode(plain)
+    return crypto.subtle.digest('SHA-256', data)
 }
 
 async function authenticate() {
+
     if (tokenExpired()) {
+        const codeVerifier = generateRandomString(64);
+        const hashed = await sha256(codeVerifier)
+        const codeChallenge = base64encode(hashed);
         const data = `grant_type=client_credentials&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`
         try {
             const response = await axios.post(`https://accounts.spotify.com/api/token`, data,
@@ -23,8 +47,8 @@ async function authenticate() {
                 }
             );
             token.bearer = response.data.access_token
-            expires = new Date()            
-            expires_in = response.data.expires_in * 10
+            const expires = new Date()
+            const expires_in = response.data.expires_in * 10
             expires.setTime(expires.getTime() + expires_in)
             token.expires = expires
             return token.bearer;
